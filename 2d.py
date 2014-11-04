@@ -16,13 +16,13 @@
 import ephem, datetime, math, urllib
 from pyglet.gl import *
 
-resource = [["Space Stations", 			"stations"],
-			["NOAA Weather Satellites", "noaa"],
-			["GPS Operational", 		"gps-ops"],
-			["Intelsat Satellites", 	"intelsat"],
-			["Science Satellites", 		"science"],
-			["Miscellaneous Military",	"military"],
-			["Last 30 Days' Launches", 	"tle-new"]]
+resource = [["Space Stations",		"stations"],
+	["NOAA Weather Satellites",	"noaa"],
+	["GPS Operational", 		"gps-ops"],
+	["Intelsat Satellites", 	"intelsat"],
+	["Science Satellites", 		"science"],
+	["Miscellaneous Military",	"military"],
+	["Last 30 Days' Launches", 	"tle-new"]]
 
 window   = pyglet.window.Window(1024,576)
 total    = 50
