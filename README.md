@@ -12,7 +12,7 @@ Can be found at [www.celestrak.com](http://www.celestrak.com/NORAD/elements/)
 
 ## 2D version
 
-file: `2d.py`  
+file: [`2d.py`](2d.py)
 
 How to control:  
 
@@ -23,7 +23,7 @@ How to control:
 
 ## 3D version
 
-file: `3d.py`  
+file: [`3d.py`](3d.py) 
 
 Current Control:  
 
@@ -32,7 +32,7 @@ Current Control:
 
 ## Sample Data
 
-Satellites Category | File Name (inside `/data/`)
+Satellites Category | File Name (inside [`/data/`](data/) )
 ------------ | ------------- 
 Space Stations | stations.txt
 NOAA Weather Satellites | noaa.txt
