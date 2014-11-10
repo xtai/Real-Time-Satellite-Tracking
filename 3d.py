@@ -1,7 +1,7 @@
 from pyglet.gl import *
 from math import *
 
-tex = pyglet.image.load('map.png').get_texture()
+tex = pyglet.image.load('assets/map.png').get_texture()
 
 step = 10
 
@@ -9,22 +9,25 @@ vlists = []
 for lat in range(-90,90,step):
 	verts = []
 	texc = []
+	noramls = []
 	for lon in range(-180,181,step):
 		x = -cos(radians(lat)) * cos(radians(lon)) 
 		y = sin(radians(lat))
 		z = cos(radians(lat)) * sin(radians(lon))
 		s = (lon+180) / 360.0
 		t = (lat+90) / 180.0
-		verts += [x*0.8,y*0.8,z*0.8]
+		verts += [x,y,z]
 		texc += [s,t]
+		noramls += [x,y,z]
 		x = -cos(radians((lat+step))) * cos(radians(lon))
 		y = sin(radians((lat+step)))
 		z = cos(radians((lat+step))) * sin(radians(lon))
 		s = (lon+180) / 360.0
 		t = ((lat+step)+90) / 180.0
-		verts += [x*0.8,y*0.8,z*0.8]
+		verts += [x,y,z]
 		texc += [s,t]
-	vlist = pyglet.graphics.vertex_list(len(verts)/3, ('v3f', verts), ('t2f', texc))
+		noramls += [x,y,z]
+	vlist = pyglet.graphics.vertex_list(len(verts)/3, ('v3f', verts), ('t2f', texc), ('n3f', noramls))
 	vlists.append(vlist)
 
 window = pyglet.window.Window(700,700)
@@ -32,11 +35,14 @@ keys = pyglet.window.key.KeyStateHandler()
 window.push_handlers(keys)
 
 angle_x = -170
+angle_x_light = 0
 angle_y = -30
 zoom = 80
 
 
 glEnable(GL_DEPTH_TEST)
+glEnable(GL_LIGHTING)
+glEnable(GL_LIGHT0)
 
 @window.event
 def on_draw():
@@ -50,21 +56,30 @@ def on_draw():
 	glTranslatef(0,0,-2)
 	glRotatef(-angle_y, 1, 0, 0)
 	glRotatef(angle_x, 0, 1, 0)
+	glLightfv(GL_LIGHT0, GL_POSITION, (GLfloat*4)(*[0, -0.4, -1, 0]))
+	# glMaterialfv(GL_FRONT, GL_DIFFUSE, (GLfloat*4)(*[1, 1, 1, 1]))
+	# glMaterialfv(GL_FRONT, GL_SPECULAR, (GLfloat*4)(*[1, 1, 1, 0.5]))
+	# glMaterialf(GL_FRONT, GL_SHININESS, 80)
+	glRotatef(angle_x_light, 0, 1, 0)
 	glColor3f(1,1,1)
 	glEnable(GL_TEXTURE_2D)
 	glBindTexture(GL_TEXTURE_2D, tex.id)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+	# glShadeModel(GL_FLAT)
 	for v in vlists:
 		v.draw(GL_TRIANGLE_STRIP)
 		# v.draw(GL_LINE_STRIP)
 	glDisable(GL_TEXTURE_2D)
 
 def update(dt):
-	global angle_x, angle_y, keys, zoom
+	global angle_x, angle_y, keys, zoom, angle_x_light
+	angle_x_light += 0.5
 	if keys[pyglet.window.key.LEFT]:
 		angle_x += 1
 	elif keys[pyglet.window.key.RIGHT]:
 		angle_x -= 1
+	if keys[pyglet.window.key.SPACE]:
+		angle_x_light -= 1
 	if keys[pyglet.window.key.UP]:
 		if angle_y + 1 > 60:
 			angle_y = 60
@@ -89,7 +104,6 @@ def update(dt):
 		zoom = 40
 	elif zoom > 160:
 		zoom = 160
-
 	print angle_x, angle_y
 
 @window.event
