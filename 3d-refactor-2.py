@@ -1,5 +1,5 @@
 # ---------------------------------------
-# Final Project A for UB DMS 423 - Fall 14
+# Final Project B for UB DMS 423 - Fall 14
 # Real-time Satellite Visualization
 # by Xiaoyu Tai
 #
@@ -13,7 +13,7 @@
 # http://earthobservatory.nasa.gov/blogs/elegantfigures/files/2011/10/land_shallow_topo_2011_8192.jpg
 # ---------------------------------------
 
-import ephem, datetime, urllib2, json
+import ephem, datetime, urllib2, json, random
 from pyglet.gl import *
 from pyglet.window import *
 from math import *
@@ -129,6 +129,10 @@ def init():
 	global show_lines
 	show_lines = 0
 
+	# Define Google Geocoding
+	global geo
+	geo = ""
+
 	# Reload All Satellites
 	global resource, satels
 	resource = [["NOAA Weather Satellites",	"noaa"],
@@ -182,11 +186,13 @@ def draw_satellites():
 		s.draw()
 
 def draw_info():
-	title = pyglet.text.Label("DMS 423 Final Project A, Real-time Satellite Visualization", color=(255,255,255,200))
+	info_address(gyration[0][0],gyration[0][1])
+	title = pyglet.text.Label("DMS 423 Final Project B, Real-time Satellite Visualization + Address Game", color=(255,255,255,200))
 	tname = pyglet.text.Label("Xiaoyu Tai", color=(255,255,255,100))
 	ctime = pyglet.text.Label("UTC Time: " + datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), color=(255,255,255,200))
 	csate = pyglet.text.Label("Satellites Category: " + resource[num][0], color=(255,255,255,200))
 	cross = pyglet.graphics.vertex_list(4, ('v3f', [1,0,0,-1,0,0,0,1,0,0,-1,0]))
+	addre = pyglet.text.Label(geo, anchor_x="center", color=(255,255,255,200))
 
 	glDisable(GL_DEPTH_TEST)
 	glLoadIdentity()	
@@ -194,6 +200,7 @@ def draw_info():
 	info_draw(tname, 5.32, 6.58)
 	info_draw(ctime, 2.3, -6.8)
 	info_draw(csate, -6.82, -6.8)
+	info_draw(addre, 0, -6.4)
 	glLoadIdentity()
 	glTranslatef(0,0,-80)
 	glScalef(0.3, 0.3, 0.3)
@@ -206,6 +213,23 @@ def info_draw(label, x, y):
 	glTranslatef(x,y,-80)
 	glScalef(0.02, 0.02, 0.02)
 	label.draw()
+
+def info_address(lat, lng):
+	global geo
+	if geo == "":
+		data = json.dumps([])
+		APIkey = "AIzaSyB4J_tdS0mjqgE1QwdYwPu-EFYyp6ZpGng"
+		url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+str(lat)+","+str(lng)+"&key="+APIkey
+		req = urllib2.Request(url, data, {'Content-Type': 'application/json'})
+		f = urllib2.urlopen(req)
+		response = f.read()
+		d = json.loads(response)
+		f.close()
+		if len(d['results']):
+			geo = d['results'][0]['formatted_address'].encode('utf-8')
+		else:
+			geo = "Nowhere"
+
 
 def update(dt):
 	update_contorl()
@@ -262,6 +286,17 @@ def update_contorl():
 	global show_lines
 	if   keys[key.G]: show_lines = 1
 	elif keys[key.H]: show_lines = 0
+
+	global geo
+	if keys[key.E]:
+		gyration, zoom = [[random.uniform(-90,90), random.uniform(-180,180)], [0, 0]], 100
+		geo = ""
+	if keys[key.R]:
+		s = random.choice(satels)
+		gyration[0], zoom = [s.lat, s.long], 100
+		geo = ""
+	if keys[key.T]:
+		geo = ""
 
 def contorl_opp(key, var, step):
 	if   key[0]: var += step
