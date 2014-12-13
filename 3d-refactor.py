@@ -22,6 +22,7 @@ from pyglet.window import *
 from math import *
 
 window = pyglet.window.Window(700,700)
+num = 1
 keys = pyglet.window.key.KeyStateHandler()
 window.push_handlers(keys)
 
@@ -95,9 +96,10 @@ def init():
 	verts = [-r,r,r,-r,-r,r,r,r,r,r,-r,r,r,-r,-r,r,r,r,r,r,-r,-r,r,r,-r,r,-r,-r,-r,r,-r,-r,-r,r,-r,r,r,-r,-r,r,r,-r,-r,-r,-r,-r,r,-r]
 	satel_vlist = pyglet.graphics.vertex_list(len(verts)/3, ('v3f', verts), ('n3f', verts))
 
-	load(1)
+	# Reload All Satellites
+	load()
 
-def load(num):
+def load():
 	global resource, satels
 	resource = [["Space Stations",		"stations"],
 		["NOAA Weather Satellites",	"noaa"],
@@ -110,7 +112,7 @@ def load(num):
 	# Loacl source
 	source = open("data/"+name + ".txt")
 	# Online source
-	# source = urllib.urlopen("http://www.celestrak.com/NORAD/elements/" + name +".txt")
+	# source = urllib2.urlopen("http://www.celestrak.com/NORAD/elements/" + name +".txt")
 	lines = [line.replace("\r\n", "") for line in source]
 	print "Current Satellites Set: " + name
 	satels = []
@@ -149,15 +151,28 @@ def draw_satellites():
 		s.draw()
 
 def draw_info():
-	glDisable(GL_DEPTH_TEST)
-	glLoadIdentity()
 	title = pyglet.text.Label("DMS 423 Final Project A, Real-time Satellite Visualization", color=(255,255,255,200))
-	name = pyglet.text.Label("Xiaoyu Tai (50133396)", color=(255,255,255,100))
-	draw_info_d(title, -6.8, 6.5)
-	draw_info_d(name, 3.5, 6.5)
+	tname = pyglet.text.Label("Xiaoyu Tai", color=(255,255,255,100))
+	ctime = pyglet.text.Label("UTC Time: " + datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), color=(255,255,255,200))
+	csate = pyglet.text.Label("Satellites Category: " + resource[num][0], color=(255,255,255,200))
+	cross = pyglet.graphics.vertex_list(4, ('v3f', [1,0,0,-1,0,0,0,1,0,0,-1,0]))
+
+
+
+	glDisable(GL_DEPTH_TEST)
+	glLoadIdentity()	
+	info_draw(title, -6.82, 6.58)
+	info_draw(tname, 5.32, 6.58)
+	info_draw(ctime, 2.3, -6.8)
+	info_draw(csate, -6.82, -6.8)
+	glLoadIdentity()
+	glTranslatef(0,0,-80)
+	glScalef(0.4, 0.4, 0.4)
+	glColor3f(1,1,1)
+	cross.draw(GL_LINES)
 	glEnable(GL_DEPTH_TEST)
 
-def draw_info_d(label, x, y):
+def info_draw(label, x, y):
 	glLoadIdentity()
 	glTranslatef(x,y,-80)
 	glScalef(0.02, 0.02, 0.02)
@@ -191,24 +206,31 @@ def contorl():
 	gyration[1][1] = opposite([keys[key.A], keys[key.D]], gyration[1][1], 1)
  	
  	# Special Configuration to Prevent QUIVER
-	if keys[pyglet.window.key.DOWN]:
+	if keys[key.DOWN]:
 		if gyration[0][0]+0.5 >  88: gyration[0][0] = 88
 		else:                        gyration[0][0] += 0.5
-	elif keys[pyglet.window.key.UP]:
+	elif keys[key.UP]:
 		if gyration[0][0]-0.5 < -88: gyration[0][0] = -88
 		else:                        gyration[0][0] -= 0.5
 	
 	# Special Configuration for zoom
-	if keys[pyglet.window.key.Z]: zoom *= 1.03
-	elif keys[pyglet.window.key.X]: zoom /= 1.03
+	if keys[key.Z]: zoom *= 1.03
+	elif keys[key.X]: zoom /= 1.03
 
 	# Reset
-	if keys[pyglet.window.key.N]: # Reset all rotation
+	if keys[key.N]: # Reset all rotation
 		gyration, zoom = [[43.000809, -78.78897], [0, 0]], 100
-	if keys[pyglet.window.key.Q]: # Reset x-axis rotation
+	if keys[key.Q]: # Reset x-axis rotation
 		gyration[1][0] = 0
-	if keys[pyglet.window.key.E]: # Reset z-axis rotation
+	if keys[key.E]: # Reset z-axis rotation
 		gyration[1][1] = 0
+
+	# Select Satellites Category 1 - 7
+	global num
+	for key_num in xrange(49,56):
+		if keys[key_num] and num != key_num - 49:
+			num = key_num - 49
+			init()
 
 def opposite(key, var, step):
 	if   key[0]: var += step
