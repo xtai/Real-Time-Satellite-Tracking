@@ -44,23 +44,20 @@ def open_new_file(num):
 	sats = []
 	show_all_line = 0
 	for x in xrange(len(lines) / 3):
-		e = Satellite(lines[x * 3], lines[x * 3 + 1], lines[x * 3 + 2], 64)
+		e = Satellite(lines[x * 3], lines[x * 3 + 1], lines[x * 3 + 2])
 		e.compute()
 		sats.append(e)
 
 class Satellite:
-	def __init__(self, name, l1, l2, yoffset):
+	def __init__(self, name, l1, l2):
 		self.e        = ephem.readtle(name, l1, l2)
-		self.size     = 4
-		self.showline = 0
-		self.yoffset  = yoffset
 	def compute(self):
 		self.e.compute(datetime.datetime.utcnow())
 		self.long   = math.degrees(float(self.e.sublong))
 		self.lat    = math.degrees(float(self.e.sublat))
 		self.height = abs(int(self.e.elevation))
 		r = 6378150 + self.height
-		self.r = float(r)/1000000
+		self.r = r / 1000000.0
 		self.x      = -cos(radians(self.lat)) * cos(radians(self.long)) * self.r
 		self.y      = sin(radians(self.lat)) * self.r
 		self.z      = cos(radians(self.lat)) * sin(radians(self.long)) * self.r
@@ -76,10 +73,10 @@ class Satellite:
 		glRotatef(angle_x, 0, 1, 0)
 		glTranslatef(self.x,self.y,self.z)
 		glColor3f(1,0,0)
-		glScalef(zoom/65, zoom/65, zoom/65)
+		glScalef(zoom/100.0, zoom/100.0, zoom/100.0)
 		for v in self.vlists:
 			v.draw(GL_TRIANGLE_STRIP)
-		glScalef(0.01, 0.01, 0.01)
+		glScalef(0.02, 0.02, 0.02)
 		glRotatef(-angle_x, 0, 1, 0)
 		glRotatef(angle_y, 1, 0, 0)
 		glRotatef(-rocc, 0, 0, 1)
@@ -118,7 +115,6 @@ class Satellite:
 		for x in self.lines:
 			self.vline_list.append(pyglet.graphics.vertex_list(len(x)/3, ("v3f", x)))
 
-
 def init():
 	global resource, tex, tex2, step, vlists
 	global angle_x, angle_y, v_x, v_y, v_dx, v_dy, zoom
@@ -129,7 +125,7 @@ def init():
 	geo = 1
 	tex = pyglet.image.load('assets/map_4096.jpg').get_texture()
 	tex2 = pyglet.image.load('assets/s.png').get_texture()
-	step = 6
+	step = 9
 	vlists = []
 	r = 6.37815
 	for lat in range(-90,90,step):
@@ -164,7 +160,7 @@ def init():
 	v_y = 0
 	v_dx = 0
 	v_dy = 0
-	zoom = 65
+	zoom = 100
 
 	glEnable(GL_DEPTH_TEST)
 	# glEnable(GL_LIGHTING)
@@ -195,10 +191,10 @@ def on_draw():
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
 	for v in vlists:
 		v.draw(GL_TRIANGLE_STRIP)
-	glBindTexture(GL_TEXTURE_2D, tex2.id)
+	glDisable(GL_TEXTURE_2D)
+	# glBindTexture(GL_TEXTURE_2D, tex2.id)
 	for s in sats:
 		s.draw()
-	glDisable(GL_TEXTURE_2D)
 
 def update(dt):
 	global angle_x, angle_y, zoom, ro, rocc
@@ -349,36 +345,7 @@ def on_mouse_scroll(x, y, scroll_x, scroll_y):
 	v_x,v_y = temp*scroll_x*5, temp*-scroll_y*5
 
 def satellite_shape():
-	# step = 60
-	# vlists = []
-	# for lat in range(-90,90,step):
-	# 	verts = []
-	# 	texc = []
-	# 	noramls = []
-	# 	r = 0.07
-	# 	for lon in range(-180,181,step):
-	# 		x = -cos(radians(lat)) * cos(radians(lon)) * r
-	# 		y = sin(radians(lat)) * r
-	# 		z = cos(radians(lat)) * sin(radians(lon)) * r
-	# 		s = (lon+180) / 360.0
-	# 		t = (lat+90) / 180.0
-	# 		verts += [x,y,z]
-	# 		texc += [s,t]
-	# 		noramls += [x,y,z]
-	# 		x = -cos(radians((lat+step))) * cos(radians(lon)) * r
-	# 		y = sin(radians((lat+step))) * r
-	# 		z = cos(radians((lat+step))) * sin(radians(lon)) * r
-	# 		s = (lon+180) / 360.0
-	# 		t = ((lat+step)+90) / 180.0
-	# 		verts += [x,y,z]
-	# 		texc += [s,t]
-	# 		noramls += [x,y,z]
-		
-
-	# 	vlist = pyglet.graphics.vertex_list(len(verts)/3, ('v3f', verts), ('t2f', texc), ('n3f', noramls))
-	# 	vlists.append(vlist)
-	# return vlists
-	r = 0.07
+	r = 0.08
 	vlists = []
 	verts = []
 	texc = []
@@ -406,5 +373,5 @@ def satellite_shape():
 	return vlists
 
 init()
-pyglet.clock.schedule_interval(update,1/60.0)
+pyglet.clock.schedule_interval(update,1/30.0)
 pyglet.app.run()
