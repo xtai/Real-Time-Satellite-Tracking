@@ -132,7 +132,7 @@ def init():
 	# Reload All Satellites
 	global resource, satels
 	resource = [["NOAA Weather Satellites",	"noaa"],
-		["Space Stations",			"stations"],
+		["Space Stations",		"stations"],
 		["GPS Operational", 		"gps-ops"],
 		["Intelsat Satellites", 	"intelsat"],
 		["Science Satellites", 		"science"],
