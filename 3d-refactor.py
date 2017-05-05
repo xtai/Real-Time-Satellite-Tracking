@@ -26,7 +26,7 @@ from math import *
 # Local data update: 2014-12-13 07:38 UTC
 num = 0
 rang, interval = 20, 50
-online = 0
+online = 1
 
 window = pyglet.window.Window(700,700)
 keys = pyglet.window.key.KeyStateHandler()
@@ -34,7 +34,7 @@ window.push_handlers(keys)
 
 gyration = []
 zoom = 100.0
-gyration.append([43.000809, -78.78897]) # latitude, longitude
+gyration.append([37.558098, -122.272084]) # latitude, longitude
 gyration.append([0, 0]) # x-axis, z-axis
 
 class Satel:
@@ -132,12 +132,12 @@ def init():
 	# Reload All Satellites
 	global resource, satels
 	resource = [["NOAA Weather Satellites",	"noaa"],
-		["Space Stations",		"stations"],
-		["GPS Operational", 		"gps-ops"],
-		["Intelsat Satellites", 	"intelsat"],
-		["Science Satellites", 		"science"],
-		["Miscellaneous Military",	"military"],
-		["Last 30 Days' Launches", 	"tle-new"]]
+		["Space Stations", "stations"],
+		["GPS Operational", "gps-ops"],
+		["Intelsat Satellites", "intelsat"],
+		["Science Satellites", "science"],
+		["Miscellaneous Military", "military"],
+		["Last 30 Days' Launches", "tle-new"]]
 	name = resource[num][1]
 	# Online/Loacl source
 	if online:
@@ -182,7 +182,7 @@ def draw_satellites():
 		s.draw()
 
 def draw_info():
-	title = pyglet.text.Label("DMS 423 Final Project A, Real-time Satellite Visualization", color=(255,255,255,200))
+	title = pyglet.text.Label("Real-time Satellite Visualization", color=(255,255,255,200))
 	tname = pyglet.text.Label("Xiaoyu Tai", color=(255,255,255,100))
 	ctime = pyglet.text.Label("UTC Time: " + datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), color=(255,255,255,200))
 	csate = pyglet.text.Label("Satellites Category: " + resource[num][0], color=(255,255,255,200))

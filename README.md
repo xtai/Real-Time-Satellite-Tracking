@@ -68,15 +68,15 @@ Last 30 Days' Launches | tle-new.txt
 
 
 ## Screen Shots
-[![2D](Screenshots/Screen Shot 2014-12-13 at 2.34.01 PM.png)](Screenshots/Screen Shot 2014-12-13 at 2.34.01 PM.png)
+![2D](Screenshots/Screen Shot 2014-12-13 at 2.34.01 PM.png)]
 
-[![NOAA](Screenshots/Screen Shot 2014-12-13 at 2.53.53 AM.png)](Screenshots/Screen Shot 2014-12-13 at 2.53.53 AM.png)
+![NOAA](Screenshots/Screen Shot 2014-12-13 at 2.53.53 AM.png)]
 
-[![GPS](Screenshots/Screen Shot 2014-12-13 at 2.56.56 AM.png)](Screenshots/Screen Shot 2014-12-13 at 2.56.56 AM.png)
+![GPS](Screenshots/Screen Shot 2014-12-13 at 2.56.56 AM.png)]
 
-[![NOAA](Screenshots/Screen Shot 2014-12-13 at 2.58.56 AM.png)](Screenshots/Screen Shot 2014-12-13 at 2.58.56 AM.png)
+![NOAA](Screenshots/Screen Shot 2014-12-13 at 2.58.56 AM.png)]
 
-[![AfriStar](Screenshots/Screen Shot 2014-12-13 at 3.29.46 AM.png)](Screenshots/Screen Shot 2014-12-13 at 3.29.46 AM.png)
+![AfriStar](Screenshots/Screen Shot 2014-12-13 at 3.29.46 AM.png)]
 
 
 ## License
