@@ -13,7 +13,7 @@
 # 
 
 
-import ephem, datetime, math, urllib
+import ephem, datetime, math, urllib.request, urllib.parse, urllib.error
 from pyglet.gl import *
 
 resource = [["Space Stations",		"stations"],
@@ -83,7 +83,7 @@ class Satellite:
 		glDisable(GL_BLEND)
 	def init_line(self):
 		self.lines, self.vline_list, current_line = [], [], []
-		for x in xrange(-total,total):
+		for x in range(-total,total):
 			temp = datetime.datetime.utcnow() + datetime.timedelta(seconds=interval*x)
 			self.e.compute(temp)
 			x = (math.degrees(float(self.e.sublong)) * 128/45) + 512
@@ -106,7 +106,7 @@ class Satellite:
 			current_line.extend((x,y))
 		self.lines.append(current_line)
 		for x in self.lines:
-			self.vline_list.append(pyglet.graphics.vertex_list(len(x)/2, ("v2f", x)))
+			self.vline_list.append(pyglet.graphics.vertex_list(int(len(x)/2), ("v2f", x)))
 
 def init():
 	global background_map, background_banner, category_num
@@ -147,15 +147,15 @@ def distance(a, b):
 
 def open_new_file(num):
 	global source, lines, sats, show_all_line
-	source = open("data/"+resource[num][1] + ".txt")
+	# source = open("data/"+resource[num][1] + ".txt")
 	# Uncomment following lines for online access
-	# name = resource[num][1]
-	# url = "http://www.celestrak.com/NORAD/elements/" + name +".txt"
-	# source = urllib.urlopen(url)
-	lines = [line.replace("\r\n", "") for line in source]
+	name = resource[num][1]
+	url = "http://www.celestrak.com/NORAD/elements/" + name +".txt"
+	source = urllib.request.urlopen(url).readlines()
+	lines = [line.decode("utf-8").replace("\r\n", "") for line in source]
 	sats = []
 	show_all_line = 0
-	for x in xrange(len(lines) / 3):
+	for x in range(int(len(lines) / 3)):
 		e = Satellite(lines[x * 3], lines[x * 3 + 1], lines[x * 3 + 2], 64)
 		e.compute()
 		sats.append(e)

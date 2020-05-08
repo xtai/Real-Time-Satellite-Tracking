@@ -13,7 +13,7 @@
 # http://earthobservatory.nasa.gov/blogs/elegantfigures/files/2011/10/land_shallow_topo_2011_8192.jpg
 # ---------------------------------------
 
-import ephem, datetime, urllib2, json
+import ephem, datetime, urllib.request, urllib.error, urllib.parse, json
 from pyglet.gl import *
 from pyglet.window import *
 from math import *
@@ -73,7 +73,7 @@ class Satel:
 		self.draw_line()
 	def draw_line(self):
 		verts = []
-		for x in xrange(-rang,rang):
+		for x in range(-rang,rang):
 			temp = datetime.datetime.utcnow() + datetime.timedelta(seconds=interval*x)
 			self.ep.compute(temp)
 			lon = degrees(float(self.ep.sublong))
@@ -83,7 +83,7 @@ class Satel:
 			y   = sin(radians(lat)) * r
 			z   = cos(radians(lat)) * sin(radians(lon)) * r
 			verts += [x,y,z]
-		self.line_vlist = pyglet.graphics.vertex_list(len(verts)/3, ("v3f", verts))
+		self.line_vlist = pyglet.graphics.vertex_list(int(len(verts)/3), ("v3f", verts))
 		glLoadIdentity()
 		glTranslatef(0,0,-zoom+6.37815)    # axis rotate by earth's surface
 		glRotatef(gyration[1][0], 1, 0, 0) # x-axis rotation 
@@ -117,13 +117,13 @@ def init():
 			t2 = ((lat + step) + 90) / 180.0
 			verts += [x1,y1,z1, x2,y2,z2]
 			texc += [s1,t1, s2,t2]
-		earth_vlists.append(pyglet.graphics.vertex_list(len(verts)/3, ('v3f', verts), ('t2f', texc), ('n3f', verts)))
+		earth_vlists.append(pyglet.graphics.vertex_list(int(len(verts)/3), ('v3f', verts), ('t2f', texc), ('n3f', verts)))
 
 	global satel_vlist
 	# Don't panic, it's just a cude below (GL_TRIANGLE_STRIP)
 	r = 0.08
 	verts = [-r,r,r,-r,-r,r,r,r,r,r,-r,r,r,-r,-r,r,r,r,r,r,-r,-r,r,r,-r,r,-r,-r,-r,r,-r,-r,-r,r,-r,r,r,-r,-r,r,r,-r,-r,-r,-r,-r,r,-r]
-	satel_vlist = pyglet.graphics.vertex_list(len(verts)/3, ('v3f', verts), ('n3f', verts))
+	satel_vlist = pyglet.graphics.vertex_list(int(len(verts)/3), ('v3f', verts), ('n3f', verts))
 
 	# Default Hide All Trace of Satellites
 	global show_lines
@@ -141,13 +141,13 @@ def init():
 	name = resource[num][1]
 	# Online/Loacl source
 	if online:
-		source = urllib2.urlopen("http://www.celestrak.com/NORAD/elements/" + name +".txt")
+		source = urllib.request.urlopen("http://www.celestrak.com/NORAD/elements/" + name +".txt")
 	else:
-		source = open("data/"+name + ".txt")
-	lines = [line.replace("\r\n", "") for line in source]
-	print "Current Satellites Set: " + name
+		source = open("data/"+name + ".txt").readlines()
+	lines = [line.decode("utf-8").replace("\r\n", "") for line in source]
+	print(("Current Satellites Set: " + name))
 	satels = []
-	for x in xrange(len(lines) / 3):
+	for x in range(int(len(lines) / 3)):
 		satels.append(Satel(lines[x * 3], lines[x * 3 + 1], lines[x * 3 + 2]))
 
 @window.event
@@ -253,7 +253,7 @@ def update_contorl():
 
 	# Select Satellites Category 1 - 7
 	global num
-	for key_num in xrange(49,56):
+	for key_num in range(49,56):
 		if keys[key_num] and num != key_num - 49:
 			num = key_num - 49
 			init()

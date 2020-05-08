@@ -16,7 +16,7 @@
 # Drag the mouse to feel the 
 # 
 
-import ephem, datetime, urllib2, json, math
+import ephem, datetime, urllib.request, urllib.error, urllib.parse, json, math
 from pyglet.gl import *
 from math import *
 
@@ -35,15 +35,15 @@ resource = [["Space Stations",		"stations"],
 def open_new_file(num):
 	global source, lines, sats, show_all_line
 	source = open("data/"+resource[num][1] + ".txt")
-	print resource[num][0]
+	print((resource[num][0]))
 	# Uncomment following lines for online access
-	# name = resource[num][1]
-	# url = "http://www.celestrak.com/NORAD/elements/" + name +".txt"
-	# source = urllib.urlopen(url)
-	lines = [line.replace("\r\n", "") for line in source]
+	name = resource[num][1]
+	url = "http://www.celestrak.com/NORAD/elements/" + name +".txt"
+	source = urllib.request.urlopen(url).readlines()
+	lines = [line.decode("utf-8").replace("\r\n", "") for line in source]
 	sats = []
 	show_all_line = 0
-	for x in xrange(len(lines) / 3):
+	for x in range(int(len(lines) / 3)):
 		e = Satellite(lines[x * 3], lines[x * 3 + 1], lines[x * 3 + 2])
 		e.compute()
 		sats.append(e)
@@ -100,7 +100,7 @@ class Satellite:
 		# glDisable(GL_BLEND)
 	def init_line(self):
 		self.lines, self.vline_list, current_line = [], [], []
-		for x in xrange(-20,20):
+		for x in range(-20,20):
 			temp = datetime.datetime.utcnow() + datetime.timedelta(seconds=80*x)
 			self.e.compute(temp)
 			lon   = math.degrees(float(self.e.sublong))
@@ -113,7 +113,7 @@ class Satellite:
 			current_line.extend((x,y,z))
 		self.lines.append(current_line)
 		for x in self.lines:
-			self.vline_list.append(pyglet.graphics.vertex_list(len(x)/3, ("v3f", x)))
+			self.vline_list.append(pyglet.graphics.vertex_list(int(len(x)/3), ("v3f", x)))
 
 def init():
 	global resource, tex, tex2, step, vlists
@@ -149,7 +149,7 @@ def init():
 			verts += [x,y,z]
 			texc += [s,t]
 			noramls += [x,y,z]
-		vlist = pyglet.graphics.vertex_list(len(verts)/3, ('v3f', verts), ('t2f', texc), ('n3f', noramls))
+		vlist = pyglet.graphics.vertex_list(int(len(verts)/3), ('v3f', verts), ('t2f', texc), ('n3f', noramls))
 		vlists.append(vlist)
 
 	#42.8864468, -78.78897	
@@ -220,8 +220,8 @@ def update(dt):
 	elif rocc > 180:
 		rocc = -180
 	if not geo:
-		print "lat: "+str(-angle_y)+", long: "+str(-angle_x+90)
-		print formatted_address(geocoding(-angle_y,-angle_x+90))
+		print(("lat: "+str(-angle_y)+", long: "+str(-angle_x+90)))
+		print((formatted_address(geocoding(-angle_y,-angle_x+90))))
 
 def keys_control():
 	global angle_x, angle_y, keys, zoom, geo, ro, rocc
@@ -286,10 +286,10 @@ def velocity_control():
 def geocoding(lat, lng):
 	global geo
 	data = json.dumps([])
-	APIkey = "AIzaSyB4J_tdS0mjqgE1QwdYwPu-EFYyp6ZpGng"
+	APIkey = ""
 	url = "https://maps.googleapis.com/maps/api/geocode/json?latlng="+str(lat)+","+str(lng)+"&key="+APIkey
-	req = urllib2.Request(url, data, {'Content-Type': 'application/json'})
-	f = urllib2.urlopen(req)
+	req = urllib.request.Request(url, data, {'Content-Type': 'application/json'})
+	f = urllib.request.urlopen(req)
 	response = f.read()
 	d = json.loads(response)
 	f.close()
@@ -368,7 +368,7 @@ def satellite_shape():
 	verts += [-r,r,-r]
 
 	noramls = verts
-	vlist = pyglet.graphics.vertex_list(len(verts)/3, ('v3f', verts), ('n3f', noramls))
+	vlist = pyglet.graphics.vertex_list(int(len(verts)/3), ('v3f', verts), ('n3f', noramls))
 	vlists.append(vlist)
 	return vlists
 
