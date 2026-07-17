@@ -53,7 +53,7 @@ class Satellite:
 		self.showline = 0
 		self.yoffset  = yoffset
 	def compute(self):
-		self.e.compute(datetime.datetime.utcnow())
+		self.e.compute(datetime.datetime.now(datetime.timezone.utc))
 		self.long  = math.degrees(float(self.e.sublong))
 		self.lat   = math.degrees(float(self.e.sublat))
 		self.x     = (self.long * 128/45) + 512
@@ -84,7 +84,7 @@ class Satellite:
 	def init_line(self):
 		self.lines, self.vline_list, current_line = [], [], []
 		for x in range(-total,total):
-			temp = datetime.datetime.utcnow() + datetime.timedelta(seconds=interval*x)
+			temp = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=interval*x)
 			self.e.compute(temp)
 			x = (math.degrees(float(self.e.sublong)) * 128/45) + 512
 			y = (math.degrees(float(self.e.sublat)) * 128/45) + 256 + self.yoffset
@@ -116,7 +116,7 @@ def init():
 	background_map    = Background(1024,512,0,64,"assets/blue.jpg")
 	background_banner = Background(1024,128,0,0,"assets/bg.png")
 	text_current_set  = pyglet.text.Label("Satellites Category on Screen: " + resource[category_num][0], x=15, y=42, anchor_y="center", color=(255,255,255,200))
-	text_current_time = pyglet.text.Label("Current UTC Time: " + datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), x=15, y=22, anchor_y="center", color=(255,255,255,200))
+	text_current_time = pyglet.text.Label("Current UTC Time: " + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S"), x=15, y=22, anchor_y="center", color=(255,255,255,200))
 	text_infos        = pyglet.text.Label("Click a satellite to display its orbit, Press H to show/hide all orbits on-screen.", x=460, y=50, anchor_y="center", color=(255,255,255,200))
 	text_infos_2      = pyglet.text.Label("Press UP/DOWN to change satellite category.", x=460, y=32, anchor_y="center", color=(255,255,255,200))
 	text_infos_3      = pyglet.text.Label("Press LEFT/RIGHT to adjust orbit interval for line drawing.", x=460, y=14, anchor_y="center", color=(255,255,255,200))
@@ -137,7 +137,7 @@ def on_draw():
 
 def update(dt):
 	global text_current_time, text_current_set
-	text_current_time = pyglet.text.Label("Current UTC Time: " + datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"), x=15, y=22, anchor_y="center", color=(255,255,255,200))
+	text_current_time = pyglet.text.Label("Current UTC Time: " + datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S"), x=15, y=22, anchor_y="center", color=(255,255,255,200))
 	text_current_set  = pyglet.text.Label("Satellites Category on Screen: " + resource[category_num][0], x=15, y=42, anchor_y="center", color=(255,255,255,200))
 	for x in sats:
 		x.compute()
